@@ -1,19 +1,18 @@
 #define ENABLE 13
 #define DIRA 12
-#define DIRB 11
-#include "DHT.h"
-#include "timer.h"
+#define DHTTYPE DHT11 
 #define DHTPIN A5
 
-#define DHTTYPE DHT11 
+#include "DHT.h"
+#include "timer.h"
 
 DHT dht(DHTPIN, DHTTYPE);
-
 enum LED {INIT, ON} gstate = INIT;
-
 enum DISPLAY2 {INIT2, TWO} gstate2 = INIT2;
+
 const int LED = A4; 
 int i = 0; // tick 
+
 const char gSegPins[] = {5,6,7,8,9, A0, A1};
 const int digitPins[] ={2, 3, };
 
@@ -87,8 +86,9 @@ displayNumTo7Seg(digit, 2);
    
 break;
   }
-   TimerSet(1000);
-   delay(10); // Delay for stability (adjust if needed)
+
+   delayMicroseconds(9000);
+   // Delay for stability (adjust if needed)
   }
 }
 
@@ -123,37 +123,25 @@ void setup() {
    pinMode(LED,OUTPUT);
  pinMode(ENABLE,OUTPUT);
   pinMode(DIRA,OUTPUT);
-  pinMode(DIRB,OUTPUT);
+
    for (int i = 0; i < 3; ++i) {
     pinMode(digitPins[i], OUTPUT);
   }
     for (int i = 0; i < 7; ++i) {
     pinMode(gSegPins[i], OUTPUT);
   }
-
-   
-   Serial.println(F("DHTxx test!"));
-
+Serial.println(F("DHTxx test!"));
   Serial.begin(9600);
+  dht.begin();
 }
 
 void loop() {
-  
-  delay(2000);
- 
 
-  int temperature = dht.readTemperature(true);
-  if ( isnan(temperature)) {
-    Serial.println(F("Failed to read from DHT sensor!"));
-    return;
-  }else{
-    // if(temperature < 50){
-    //   fan(temperature);//set to off
-    // }
-    Serial.print(temperature);
-Serial.print(F("°F "));
-displayTemperature(temperature);
-fan(temperature);
-  }
+ int temperature = dht.readTemperature(true);
+  Serial.println(temperature); 
+  Serial.print(F("°F  "));
+  displayTemperature(temperature);
+  fan(temperature);
+  TimerSet(2000);
   
 }
